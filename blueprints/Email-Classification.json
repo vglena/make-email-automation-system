@@ -1,0 +1,2628 @@
+{
+    "name": "01 - TFM - Clasificar correos",
+    "flow": [
+        {
+            "id": 11,
+            "module": "google-email:triggerWatchNewEmails",
+            "version": 4,
+            "parameters": {
+                "from": "",
+                "size": {
+                    "unit": "M",
+                    "amount": null,
+                    "criteria": "larger"
+                },
+                "limit": 10,
+                "folder": "INBOX",
+                "format": "full",
+                "subject": "",
+                "criteria": "is:unread",
+                "markSeen": true,
+                "filterType": "simpleSearch",
+                "__IMTCONN__": 3702043,
+                "excludeWords": "",
+                "includeWords": "",
+                "hasAttachment": false
+            },
+            "mapper": {},
+            "metadata": {
+                "designer": {
+                    "x": 0,
+                    "y": 300,
+                    "name": "Lee correos"
+                },
+                "restore": {
+                    "parameters": {
+                        "size": {
+                            "nested": {
+                                "unit": {
+                                    "label": "MB (megabytes)"
+                                },
+                                "criteria": {
+                                    "label": "Greater than"
+                                }
+                            }
+                        },
+                        "folder": {
+                            "label": "Inbox"
+                        },
+                        "format": {
+                            "label": "Full content"
+                        },
+                        "criteria": {
+                            "label": "Only unread messages"
+                        },
+                        "filterType": {
+                            "label": "Simple filter"
+                        },
+                        "__IMTCONN__": {
+                            "data": {
+                                "scoped": "true",
+                                "connection": "google-email"
+                            },
+                            "label": "My Gmail connection (bisont55@gmail.com)"
+                        }
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "__IMTCONN__",
+                        "type": "account:google-email",
+                        "label": "Connection",
+                        "required": true
+                    },
+                    {
+                        "name": "filterType",
+                        "type": "select",
+                        "label": "Filter type",
+                        "required": true,
+                        "validate": {
+                            "enum": [
+                                "simpleSearch",
+                                "gmailSearch"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "format",
+                        "type": "select",
+                        "label": "Content format",
+                        "required": true,
+                        "validate": {
+                            "enum": [
+                                "full",
+                                "raw",
+                                "metadata",
+                                "minimal"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "folder",
+                        "type": "select",
+                        "label": "Folder",
+                        "required": true
+                    },
+                    {
+                        "name": "labelIds",
+                        "type": "select",
+                        "label": "Label"
+                    },
+                    {
+                        "name": "criteria",
+                        "type": "select",
+                        "label": "Criteria",
+                        "required": true,
+                        "validate": {
+                            "enum": [
+                                "all",
+                                "is:read",
+                                "is:unread"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "markSeen",
+                        "type": "boolean",
+                        "label": "Mark email message(s) as read when fetched"
+                    },
+                    {
+                        "name": "limit",
+                        "type": "uinteger",
+                        "label": "Limit",
+                        "required": true,
+                        "validate": {
+                            "max": 500
+                        }
+                    },
+                    {
+                        "name": "from",
+                        "type": "email",
+                        "label": "Sender email address"
+                    },
+                    {
+                        "name": "subject",
+                        "type": "text",
+                        "label": "Subject"
+                    },
+                    {
+                        "name": "includeWords",
+                        "type": "text",
+                        "label": "Has the words"
+                    },
+                    {
+                        "name": "excludeWords",
+                        "type": "text",
+                        "label": "Doesn't have"
+                    },
+                    {
+                        "name": "size",
+                        "spec": [
+                            {
+                                "name": "criteria",
+                                "type": "select",
+                                "label": "Criteria",
+                                "validate": {
+                                    "enum": [
+                                        "larger",
+                                        "smaller"
+                                    ]
+                                }
+                            },
+                            {
+                                "name": "amount",
+                                "type": "integer",
+                                "label": "Size",
+                                "validate": {
+                                    "min": 0
+                                }
+                            },
+                            {
+                                "name": "unit",
+                                "type": "select",
+                                "label": "Size unit",
+                                "validate": {
+                                    "enum": [
+                                        "M",
+                                        "K",
+                                        "bytes"
+                                    ]
+                                }
+                            }
+                        ],
+                        "type": "collection",
+                        "label": "Email size"
+                    },
+                    {
+                        "name": "hasAttachment",
+                        "type": "boolean",
+                        "label": "Only emails with attachments/media",
+                        "required": true
+                    }
+                ],
+                "interface": [
+                    {
+                        "name": "id",
+                        "type": "text",
+                        "label": "Message ID"
+                    },
+                    {
+                        "name": "threadId",
+                        "type": "text",
+                        "label": "Thread ID"
+                    },
+                    {
+                        "name": "internalDate",
+                        "type": "date",
+                        "label": "Date"
+                    },
+                    {
+                        "name": "subject",
+                        "type": "text",
+                        "label": "Subject",
+                        "condition": true
+                    },
+                    {
+                        "name": "fromName",
+                        "type": "text",
+                        "label": "From (name)",
+                        "condition": true
+                    },
+                    {
+                        "name": "fromEmail",
+                        "type": "text",
+                        "label": "From (email)",
+                        "condition": true
+                    },
+                    {
+                        "name": "to",
+                        "spec": {
+                            "spec": [
+                                {
+                                    "name": "name",
+                                    "type": "text",
+                                    "label": "Name"
+                                },
+                                {
+                                    "name": "email",
+                                    "type": "text",
+                                    "label": "Email"
+                                }
+                            ],
+                            "type": "collection"
+                        },
+                        "type": "array",
+                        "label": "To",
+                        "condition": true
+                    },
+                    {
+                        "name": "cc",
+                        "spec": [
+                            {
+                                "name": "email",
+                                "type": "email",
+                                "label": "Email"
+                            },
+                            {
+                                "name": "name",
+                                "type": "text",
+                                "label": "Name"
+                            }
+                        ],
+                        "type": "array",
+                        "label": "CC",
+                        "condition": true
+                    },
+                    {
+                        "name": "bcc",
+                        "spec": [
+                            {
+                                "name": "email",
+                                "type": "email",
+                                "label": "Email"
+                            },
+                            {
+                                "name": "name",
+                                "type": "text",
+                                "label": "Name"
+                            }
+                        ],
+                        "type": "array",
+                        "label": "BCC",
+                        "condition": true
+                    },
+                    {
+                        "name": "snippet",
+                        "type": "text",
+                        "label": "Snippet"
+                    },
+                    {
+                        "name": "fullTextBody",
+                        "type": "text",
+                        "label": "Full text body",
+                        "condition": true
+                    },
+                    {
+                        "name": "htmlBody",
+                        "type": "text",
+                        "label": "HTML body",
+                        "condition": true
+                    },
+                    {
+                        "name": "hasAttachment",
+                        "type": "boolean",
+                        "label": "Has attachment",
+                        "condition": true
+                    },
+                    {
+                        "name": "hasMedia",
+                        "type": "boolean",
+                        "label": "Has media",
+                        "condition": true
+                    },
+                    {
+                        "name": "sysFolders",
+                        "spec": [
+                            {
+                                "name": "id",
+                                "type": "text",
+                                "label": "System folder ID"
+                            },
+                            {
+                                "name": "name",
+                                "type": "text",
+                                "label": "System folder name"
+                            }
+                        ],
+                        "type": "array",
+                        "label": "System folders"
+                    },
+                    {
+                        "name": "categoryFolders",
+                        "spec": [
+                            {
+                                "name": "id",
+                                "type": "text",
+                                "label": "Category folder ID"
+                            },
+                            {
+                                "name": "name",
+                                "type": "text",
+                                "label": "Category folder name"
+                            }
+                        ],
+                        "type": "array",
+                        "label": "Category folders"
+                    },
+                    {
+                        "name": "userLabelFolders",
+                        "spec": [
+                            {
+                                "name": "id",
+                                "type": "text",
+                                "label": "User label folder ID"
+                            },
+                            {
+                                "name": "name",
+                                "type": "text",
+                                "label": "User label folder name"
+                            }
+                        ],
+                        "type": "array",
+                        "label": "User label folders"
+                    },
+                    {
+                        "name": "labelIds",
+                        "spec": {
+                            "type": "text"
+                        },
+                        "type": "array",
+                        "label": "Message folder IDs"
+                    },
+                    {
+                        "name": "headers",
+                        "spec": [
+                            {
+                                "name": "Delivered-To",
+                                "type": "text",
+                                "label": "Delivered-To"
+                            },
+                            {
+                                "name": "Received",
+                                "type": "text",
+                                "label": "Received"
+                            },
+                            {
+                                "name": "Date",
+                                "type": "text",
+                                "label": "Date (header)"
+                            },
+                            {
+                                "name": "X-Original-Sender",
+                                "type": "text"
+                            },
+                            {
+                                "name": "Reply-To",
+                                "type": "text"
+                            },
+                            {
+                                "name": "Subject",
+                                "type": "text",
+                                "label": "Subject"
+                            },
+                            {
+                                "name": "From",
+                                "type": "text",
+                                "label": "From"
+                            },
+                            {
+                                "name": "To",
+                                "type": "text",
+                                "label": "To"
+                            },
+                            {
+                                "name": "Message-ID",
+                                "type": "text",
+                                "label": "Message-ID"
+                            },
+                            {
+                                "name": "In-Reply-To",
+                                "type": "text",
+                                "label": "In-Reply-To"
+                            }
+                        ],
+                        "type": "collection",
+                        "label": "Headers",
+                        "condition": true
+                    },
+                    {
+                        "name": "sizeEstimate",
+                        "type": "number",
+                        "label": "Size estimate"
+                    },
+                    {
+                        "name": "historyId",
+                        "type": "text",
+                        "label": "History ID"
+                    }
+                ]
+            }
+        },
+        {
+            "id": 23,
+            "module": "builtin:BasicRouter",
+            "version": 1,
+            "mapper": null,
+            "metadata": {
+                "designer": {
+                    "x": 300,
+                    "y": 300
+                }
+            },
+            "routes": [
+                {
+                    "flow": [
+                        {
+                            "id": 20,
+                            "module": "google-email:moveAnEmail",
+                            "version": 4,
+                            "parameters": {
+                                "__IMTCONN__": 3702043
+                            },
+                            "filter": {
+                                "name": "nota",
+                                "conditions": [
+                                    [
+                                        {
+                                            "a": "{{11.subject}}",
+                                            "b": "nota",
+                                            "o": "text:contain:ci"
+                                        }
+                                    ]
+                                ]
+                            },
+                            "mapper": {
+                                "to": "Label_6269678699644561253",
+                                "from": "INBOX",
+                                "messageId": "{{11.id}}"
+                            },
+                            "metadata": {
+                                "designer": {
+                                    "x": 600,
+                                    "y": 0,
+                                    "name": "Mueve a Nota de control"
+                                },
+                                "restore": {
+                                    "expect": {
+                                        "to": {
+                                            "mode": "chose",
+                                            "label": "Nota de control"
+                                        },
+                                        "from": {
+                                            "mode": "chose",
+                                            "label": "Inbox"
+                                        },
+                                        "messageId": {
+                                            "nested": [
+                                                {
+                                                    "help": "To ensure you see the most up-to-date labels, refresh **↻** the Message ID above.",
+                                                    "name": "from",
+                                                    "type": "select",
+                                                    "label": "Source folder",
+                                                    "default": "INBOX",
+                                                    "dynamic": true,
+                                                    "grouped": true,
+                                                    "options": [
+                                                        {
+                                                            "type": "system",
+                                                            "label": "System folders",
+                                                            "options": [
+                                                                {
+                                                                    "label": "Important",
+                                                                    "value": "IMPORTANT"
+                                                                },
+                                                                {
+                                                                    "label": "Inbox",
+                                                                    "value": "INBOX"
+                                                                },
+                                                                {
+                                                                    "label": "Spam",
+                                                                    "value": "SPAM"
+                                                                },
+                                                                {
+                                                                    "label": "Starred",
+                                                                    "value": "STARRED"
+                                                                },
+                                                                {
+                                                                    "label": "Trash",
+                                                                    "value": "TRASH"
+                                                                },
+                                                                {
+                                                                    "label": "Unread",
+                                                                    "value": "UNREAD"
+                                                                },
+                                                                {
+                                                                    "label": "Yellow star",
+                                                                    "value": "YELLOW_STAR"
+                                                                }
+                                                            ]
+                                                        },
+                                                        {
+                                                            "type": "category",
+                                                            "label": "Categories",
+                                                            "options": [
+                                                                {
+                                                                    "label": "Forums",
+                                                                    "value": "CATEGORY_FORUMS"
+                                                                },
+                                                                {
+                                                                    "label": "Personal",
+                                                                    "value": "CATEGORY_PERSONAL"
+                                                                },
+                                                                {
+                                                                    "label": "Promotions",
+                                                                    "value": "CATEGORY_PROMOTIONS"
+                                                                },
+                                                                {
+                                                                    "label": "Social",
+                                                                    "value": "CATEGORY_SOCIAL"
+                                                                },
+                                                                {
+                                                                    "label": "Updates",
+                                                                    "value": "CATEGORY_UPDATES"
+                                                                }
+                                                            ]
+                                                        },
+                                                        {
+                                                            "type": "user",
+                                                            "label": "User labels",
+                                                            "options": [
+                                                                {
+                                                                    "label": "Actas de reunión",
+                                                                    "value": "Label_1706970560617796916"
+                                                                },
+                                                                {
+                                                                    "label": "Facturas",
+                                                                    "value": "Label_8492585630295695790"
+                                                                },
+                                                                {
+                                                                    "label": "Nota de control",
+                                                                    "value": "Label_6269678699644561253"
+                                                                },
+                                                                {
+                                                                    "label": "prevalor",
+                                                                    "value": "Label_6770808087281458187"
+                                                                },
+                                                                {
+                                                                    "label": "Revision_Spam",
+                                                                    "value": "Label_1709010899457676807"
+                                                                }
+                                                            ]
+                                                        }
+                                                    ],
+                                                    "mappable": {
+                                                        "help": "Enter a folder/label ID."
+                                                    },
+                                                    "required": true
+                                                },
+                                                {
+                                                    "help": "To ensure you see the most up-to-date labels, refresh **↻** the Message ID above.",
+                                                    "name": "to",
+                                                    "type": "select",
+                                                    "label": "Destination folder",
+                                                    "dynamic": true,
+                                                    "grouped": true,
+                                                    "options": [
+                                                        {
+                                                            "type": "system",
+                                                            "label": "System folders",
+                                                            "options": [
+                                                                {
+                                                                    "label": "Important",
+                                                                    "value": "IMPORTANT"
+                                                                },
+                                                                {
+                                                                    "label": "Inbox",
+                                                                    "value": "INBOX"
+                                                                },
+                                                                {
+                                                                    "label": "Spam",
+                                                                    "value": "SPAM"
+                                                                },
+                                                                {
+                                                                    "label": "Starred",
+                                                                    "value": "STARRED"
+                                                                },
+                                                                {
+                                                                    "label": "Trash",
+                                                                    "value": "TRASH"
+                                                                },
+                                                                {
+                                                                    "label": "Unread",
+                                                                    "value": "UNREAD"
+                                                                },
+                                                                {
+                                                                    "label": "Yellow star",
+                                                                    "value": "YELLOW_STAR"
+                                                                }
+                                                            ]
+                                                        },
+                                                        {
+                                                            "type": "category",
+                                                            "label": "Categories",
+                                                            "options": [
+                                                                {
+                                                                    "label": "Forums",
+                                                                    "value": "CATEGORY_FORUMS"
+                                                                },
+                                                                {
+                                                                    "label": "Personal",
+                                                                    "value": "CATEGORY_PERSONAL"
+                                                                },
+                                                                {
+                                                                    "label": "Promotions",
+                                                                    "value": "CATEGORY_PROMOTIONS"
+                                                                },
+                                                                {
+                                                                    "label": "Social",
+                                                                    "value": "CATEGORY_SOCIAL"
+                                                                },
+                                                                {
+                                                                    "label": "Updates",
+                                                                    "value": "CATEGORY_UPDATES"
+                                                                }
+                                                            ]
+                                                        },
+                                                        {
+                                                            "type": "user",
+                                                            "label": "User labels",
+                                                            "options": [
+                                                                {
+                                                                    "label": "Actas de reunión",
+                                                                    "value": "Label_1706970560617796916"
+                                                                },
+                                                                {
+                                                                    "label": "Facturas",
+                                                                    "value": "Label_8492585630295695790"
+                                                                },
+                                                                {
+                                                                    "label": "Nota de control",
+                                                                    "value": "Label_6269678699644561253"
+                                                                },
+                                                                {
+                                                                    "label": "prevalor",
+                                                                    "value": "Label_6770808087281458187"
+                                                                },
+                                                                {
+                                                                    "label": "Revision_Spam",
+                                                                    "value": "Label_1709010899457676807"
+                                                                }
+                                                            ]
+                                                        }
+                                                    ],
+                                                    "mappable": {
+                                                        "help": "Enter a folder/label ID."
+                                                    },
+                                                    "required": true
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "parameters": {
+                                        "__IMTCONN__": {
+                                            "data": {
+                                                "scoped": "true",
+                                                "connection": "google-email"
+                                            },
+                                            "label": "My Gmail connection (bisont55@gmail.com)"
+                                        }
+                                    }
+                                },
+                                "parameters": [
+                                    {
+                                        "name": "__IMTCONN__",
+                                        "type": "account:google-email",
+                                        "label": "Connection",
+                                        "required": true
+                                    }
+                                ],
+                                "expect": [
+                                    {
+                                        "name": "messageId",
+                                        "type": "text",
+                                        "label": "Message ID",
+                                        "required": true
+                                    },
+                                    {
+                                        "name": "from",
+                                        "type": "select",
+                                        "label": "Source folder",
+                                        "required": true
+                                    },
+                                    {
+                                        "name": "to",
+                                        "type": "select",
+                                        "label": "Destination folder",
+                                        "required": true
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "id": 14,
+                            "module": "google-email:listEmailAttachments",
+                            "version": 4,
+                            "parameters": {
+                                "__IMTCONN__": 3702043
+                            },
+                            "mapper": {
+                                "include": [
+                                    "attachment",
+                                    "media"
+                                ],
+                                "messageId": "{{20.id}}",
+                                "returnAttachmentData": true
+                            },
+                            "metadata": {
+                                "designer": {
+                                    "x": 900,
+                                    "y": 0,
+                                    "name": "Descarga adjuntos"
+                                },
+                                "restore": {
+                                    "expect": {
+                                        "include": {
+                                            "mode": "chose"
+                                        }
+                                    },
+                                    "parameters": {
+                                        "__IMTCONN__": {
+                                            "data": {
+                                                "scoped": "true",
+                                                "connection": "google-email"
+                                            },
+                                            "label": "My Gmail connection (bisont55@gmail.com)"
+                                        }
+                                    }
+                                },
+                                "parameters": [
+                                    {
+                                        "name": "__IMTCONN__",
+                                        "type": "account:google-email",
+                                        "label": "Connection",
+                                        "required": true
+                                    }
+                                ],
+                                "expect": [
+                                    {
+                                        "name": "messageId",
+                                        "type": "text",
+                                        "label": "Message ID",
+                                        "required": true
+                                    },
+                                    {
+                                        "name": "include",
+                                        "type": "select",
+                                        "label": "Include",
+                                        "multiple": true,
+                                        "required": true,
+                                        "validate": {
+                                            "enum": [
+                                                "attachment",
+                                                "media"
+                                            ]
+                                        }
+                                    },
+                                    {
+                                        "name": "returnAttachmentData",
+                                        "type": "boolean",
+                                        "label": "Return media or attachment file data",
+                                        "required": true
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "id": 15,
+                            "module": "google-drive:uploadAFile",
+                            "version": 4,
+                            "parameters": {
+                                "__IMTCONN__": 4604668
+                            },
+                            "filter": {
+                                "name": "quitar firmas/banners/logos",
+                                "conditions": [
+                                    [
+                                        {
+                                            "a": "{{14.size}}",
+                                            "b": "40000",
+                                            "o": "number:greater"
+                                        }
+                                    ]
+                                ]
+                            },
+                            "mapper": {
+                                "data": "{{14.data}}",
+                                "select": "map",
+                                "convert": false,
+                                "filename": "{{14.filename}}",
+                                "folderId": "1JKBtHQEaHu_MY2VpN8r38JFbQpgFpOec"
+                            },
+                            "metadata": {
+                                "designer": {
+                                    "x": 1259,
+                                    "y": 0,
+                                    "name": "Subir adjunto a drive"
+                                },
+                                "restore": {
+                                    "expect": {
+                                        "select": {
+                                            "label": "Enter manually"
+                                        }
+                                    },
+                                    "parameters": {
+                                        "__IMTCONN__": {
+                                            "data": {
+                                                "scoped": "true",
+                                                "connection": "google-restricted"
+                                            },
+                                            "label": "Master IA - Drive (bisont55@gmail.com)"
+                                        }
+                                    }
+                                },
+                                "parameters": [
+                                    {
+                                        "name": "__IMTCONN__",
+                                        "type": "account:google-restricted",
+                                        "label": "Connection",
+                                        "required": true
+                                    }
+                                ],
+                                "expect": [
+                                    {
+                                        "name": "select",
+                                        "type": "select",
+                                        "label": "Enter a Folder ID",
+                                        "required": true,
+                                        "validate": {
+                                            "enum": [
+                                                "map",
+                                                "value"
+                                            ]
+                                        }
+                                    },
+                                    {
+                                        "name": "title",
+                                        "type": "text",
+                                        "label": "New File Name"
+                                    },
+                                    {
+                                        "name": "filename",
+                                        "type": "text",
+                                        "label": "File Name",
+                                        "required": true
+                                    },
+                                    {
+                                        "name": "data",
+                                        "type": "buffer",
+                                        "label": "Data",
+                                        "required": true
+                                    },
+                                    {
+                                        "name": "convert",
+                                        "type": "boolean",
+                                        "label": "Convert a File",
+                                        "required": true
+                                    },
+                                    {
+                                        "name": "folderId",
+                                        "type": "text",
+                                        "label": "Folder ID",
+                                        "required": true
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "id": 34,
+                            "module": "builtin:BasicAggregator",
+                            "version": 1,
+                            "parameters": {
+                                "feeder": 15
+                            },
+                            "mapper": {
+                                "name": "{{15.name}}",
+                                "webViewLink": "{{15.webViewLink}}",
+                                "userLabelFolders": "{{20.userLabelFolders}}"
+                            },
+                            "metadata": {
+                                "designer": {
+                                    "x": 1587,
+                                    "y": -3,
+                                    "name": "Información adjuntos"
+                                },
+                                "restore": {
+                                    "extra": {
+                                        "feeder": {
+                                            "label": "Subir adjunto a drive - Upload a File [15]"
+                                        },
+                                        "target": {
+                                            "label": "Custom"
+                                        }
+                                    }
+                                },
+                                "advanced": true
+                            },
+                            "flags": {
+                                "groupBy": "{{11.id}}"
+                            }
+                        },
+                        {
+                            "id": 35,
+                            "module": "builtin:BasicFeeder",
+                            "version": 1,
+                            "parameters": {},
+                            "mapper": {
+                                "array": "{{34.array[].userLabelFolders}}"
+                            },
+                            "metadata": {
+                                "designer": {
+                                    "x": 1891,
+                                    "y": -13,
+                                    "name": "Nombre carpeta para Airtable"
+                                },
+                                "restore": {
+                                    "expect": {
+                                        "array": {
+                                            "mode": "edit"
+                                        }
+                                    }
+                                },
+                                "expect": [
+                                    {
+                                        "mode": "edit",
+                                        "name": "array",
+                                        "spec": [],
+                                        "type": "array",
+                                        "label": "Array"
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "id": 36,
+                            "module": "airtable:ActionCreateRecord",
+                            "version": 3,
+                            "parameters": {
+                                "__IMTCONN__": 4653225
+                            },
+                            "mapper": {
+                                "base": "appYAhjjPyLSFydC3",
+                                "table": "tbl7Vcz4Z3n4F3lRy",
+                                "record": {
+                                    "fldJP5easvle0SjYC": "{{34.array[].name}}",
+                                    "fldhsGftrvuQHkT48": "{{34.array[].webViewLink}}",
+                                    "fldzaoBtJvTDY6hQN": "{{35.name}}"
+                                },
+                                "typecast": false,
+                                "useColumnId": false
+                            },
+                            "metadata": {
+                                "designer": {
+                                    "x": 2187,
+                                    "y": -3,
+                                    "name": "Agregar información a tabla"
+                                },
+                                "restore": {
+                                    "expect": {
+                                        "base": {
+                                            "label": "Clasificación adjuntos"
+                                        },
+                                        "table": {
+                                            "label": "Tabla adjuntos",
+                                            "nested": [
+                                                {
+                                                    "name": "record",
+                                                    "spec": [
+                                                        {
+                                                            "name": "fldJP5easvle0SjYC",
+                                                            "type": "text",
+                                                            "label": "Archivo"
+                                                        },
+                                                        {
+                                                            "name": "fldzaoBtJvTDY6hQN",
+                                                            "type": "text",
+                                                            "label": "Carpeta",
+                                                            "multiline": true
+                                                        },
+                                                        {
+                                                            "name": "fldhsGftrvuQHkT48",
+                                                            "type": "text",
+                                                            "label": "Enlace"
+                                                        },
+                                                        {
+                                                            "name": "fldAiZis25E7FBNki",
+                                                            "time": true,
+                                                            "type": "date",
+                                                            "label": "Date"
+                                                        },
+                                                        {
+                                                            "name": "fldi0kVzwEI5d9MJR",
+                                                            "spec": [
+                                                                {
+                                                                    "help": "Airtable will download the file at the given url and keep its own copy of it.",
+                                                                    "name": "url",
+                                                                    "type": "text",
+                                                                    "label": "File URL"
+                                                                },
+                                                                {
+                                                                    "help": "If empty, Airtable will generate the name automatically.",
+                                                                    "name": "filename",
+                                                                    "type": "filename",
+                                                                    "label": "File name"
+                                                                }
+                                                            ],
+                                                            "type": "array",
+                                                            "label": "Attachments",
+                                                            "editable": true
+                                                        }
+                                                    ],
+                                                    "type": "collection",
+                                                    "label": "Record"
+                                                }
+                                            ]
+                                        },
+                                        "record": {
+                                            "nested": {
+                                                "fldi0kVzwEI5d9MJR": {
+                                                    "mode": "chose"
+                                                }
+                                            }
+                                        },
+                                        "typecast": {
+                                            "mode": "chose"
+                                        },
+                                        "useColumnId": {
+                                            "mode": "chose"
+                                        }
+                                    },
+                                    "parameters": {
+                                        "__IMTCONN__": {
+                                            "data": {
+                                                "scoped": "true",
+                                                "connection": "airtable2"
+                                            },
+                                            "label": "Master IA - Airtable"
+                                        }
+                                    }
+                                },
+                                "parameters": [
+                                    {
+                                        "name": "__IMTCONN__",
+                                        "type": "account:airtable3,airtable2",
+                                        "label": "Connection",
+                                        "required": true
+                                    }
+                                ],
+                                "expect": [
+                                    {
+                                        "name": "base",
+                                        "type": "select",
+                                        "label": "Base",
+                                        "required": true
+                                    },
+                                    {
+                                        "name": "typecast",
+                                        "type": "boolean",
+                                        "label": "Smart links",
+                                        "required": true
+                                    },
+                                    {
+                                        "name": "useColumnId",
+                                        "type": "boolean",
+                                        "label": "Use Column ID",
+                                        "required": true
+                                    },
+                                    {
+                                        "name": "table",
+                                        "type": "select",
+                                        "label": "Table",
+                                        "required": true
+                                    },
+                                    {
+                                        "name": "record",
+                                        "spec": [
+                                            {
+                                                "name": "fldJP5easvle0SjYC",
+                                                "type": "text",
+                                                "label": "Archivo"
+                                            },
+                                            {
+                                                "name": "fldzaoBtJvTDY6hQN",
+                                                "type": "text",
+                                                "label": "Carpeta"
+                                            },
+                                            {
+                                                "name": "fldhsGftrvuQHkT48",
+                                                "type": "text",
+                                                "label": "Enlace"
+                                            },
+                                            {
+                                                "name": "fldAiZis25E7FBNki",
+                                                "time": true,
+                                                "type": "date",
+                                                "label": "Date"
+                                            },
+                                            {
+                                                "name": "fldi0kVzwEI5d9MJR",
+                                                "spec": [
+                                                    {
+                                                        "name": "url",
+                                                        "type": "text",
+                                                        "label": "File URL"
+                                                    },
+                                                    {
+                                                        "name": "filename",
+                                                        "type": "filename",
+                                                        "label": "File name"
+                                                    }
+                                                ],
+                                                "type": "array",
+                                                "label": "Attachments"
+                                            }
+                                        ],
+                                        "type": "collection",
+                                        "label": "Record"
+                                    }
+                                ],
+                                "interface": [
+                                    {
+                                        "name": "id",
+                                        "type": "text",
+                                        "label": "ID"
+                                    },
+                                    {
+                                        "name": "createdTime",
+                                        "type": "date",
+                                        "label": "Created Time"
+                                    },
+                                    {
+                                        "name": "Archivo",
+                                        "type": "text",
+                                        "label": "Archivo"
+                                    },
+                                    {
+                                        "name": "Carpeta",
+                                        "type": "text",
+                                        "label": "Carpeta",
+                                        "multiline": true
+                                    },
+                                    {
+                                        "name": "Enlace",
+                                        "type": "text",
+                                        "label": "Enlace"
+                                    },
+                                    {
+                                        "name": "Date",
+                                        "type": "date",
+                                        "label": "Date"
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "flow": [
+                        {
+                            "id": 24,
+                            "module": "google-email:moveAnEmail",
+                            "version": 4,
+                            "parameters": {
+                                "__IMTCONN__": 3702043
+                            },
+                            "filter": {
+                                "name": "prevalores",
+                                "conditions": [
+                                    [
+                                        {
+                                            "a": "{{11.subject}}",
+                                            "b": "prevalor",
+                                            "o": "text:contain:ci"
+                                        },
+                                        {
+                                            "a": "{{11.fullTextBody}}",
+                                            "b": "asignada",
+                                            "o": "text:notcontain"
+                                        },
+                                        {
+                                            "a": "{{11.fullTextBody}}",
+                                            "b": "no bancario",
+                                            "o": "text:notcontain:ci"
+                                        }
+                                    ]
+                                ]
+                            },
+                            "mapper": {
+                                "to": "Label_5640535065916496965",
+                                "from": "INBOX",
+                                "messageId": "{{11.id}}"
+                            },
+                            "metadata": {
+                                "designer": {
+                                    "x": 600,
+                                    "y": 300,
+                                    "name": "Mueve a Prevalor"
+                                },
+                                "restore": {
+                                    "expect": {
+                                        "to": {
+                                            "mode": "chose",
+                                            "label": "prevalores"
+                                        },
+                                        "from": {
+                                            "mode": "chose",
+                                            "label": "Inbox"
+                                        },
+                                        "messageId": {
+                                            "nested": [
+                                                {
+                                                    "help": "To ensure you see the most up-to-date labels, refresh **↻** the Message ID above.",
+                                                    "name": "from",
+                                                    "type": "select",
+                                                    "label": "Source folder",
+                                                    "default": "INBOX",
+                                                    "dynamic": true,
+                                                    "grouped": true,
+                                                    "options": [
+                                                        {
+                                                            "type": "system",
+                                                            "label": "System folders",
+                                                            "options": [
+                                                                {
+                                                                    "label": "Important",
+                                                                    "value": "IMPORTANT"
+                                                                },
+                                                                {
+                                                                    "label": "Inbox",
+                                                                    "value": "INBOX"
+                                                                },
+                                                                {
+                                                                    "label": "Spam",
+                                                                    "value": "SPAM"
+                                                                },
+                                                                {
+                                                                    "label": "Starred",
+                                                                    "value": "STARRED"
+                                                                },
+                                                                {
+                                                                    "label": "Trash",
+                                                                    "value": "TRASH"
+                                                                },
+                                                                {
+                                                                    "label": "Unread",
+                                                                    "value": "UNREAD"
+                                                                },
+                                                                {
+                                                                    "label": "Yellow star",
+                                                                    "value": "YELLOW_STAR"
+                                                                }
+                                                            ]
+                                                        },
+                                                        {
+                                                            "type": "category",
+                                                            "label": "Categories",
+                                                            "options": [
+                                                                {
+                                                                    "label": "Forums",
+                                                                    "value": "CATEGORY_FORUMS"
+                                                                },
+                                                                {
+                                                                    "label": "Personal",
+                                                                    "value": "CATEGORY_PERSONAL"
+                                                                },
+                                                                {
+                                                                    "label": "Promotions",
+                                                                    "value": "CATEGORY_PROMOTIONS"
+                                                                },
+                                                                {
+                                                                    "label": "Social",
+                                                                    "value": "CATEGORY_SOCIAL"
+                                                                },
+                                                                {
+                                                                    "label": "Updates",
+                                                                    "value": "CATEGORY_UPDATES"
+                                                                }
+                                                            ]
+                                                        },
+                                                        {
+                                                            "type": "user",
+                                                            "label": "User labels",
+                                                            "options": [
+                                                                {
+                                                                    "label": "Nota de control",
+                                                                    "value": "Label_6269678699644561253"
+                                                                },
+                                                                {
+                                                                    "label": "prevalores",
+                                                                    "value": "Label_5640535065916496965"
+                                                                }
+                                                            ]
+                                                        }
+                                                    ],
+                                                    "mappable": {
+                                                        "help": "Enter a folder/label ID."
+                                                    },
+                                                    "required": true
+                                                },
+                                                {
+                                                    "help": "To ensure you see the most up-to-date labels, refresh **↻** the Message ID above.",
+                                                    "name": "to",
+                                                    "type": "select",
+                                                    "label": "Destination folder",
+                                                    "dynamic": true,
+                                                    "grouped": true,
+                                                    "options": [
+                                                        {
+                                                            "type": "system",
+                                                            "label": "System folders",
+                                                            "options": [
+                                                                {
+                                                                    "label": "Important",
+                                                                    "value": "IMPORTANT"
+                                                                },
+                                                                {
+                                                                    "label": "Inbox",
+                                                                    "value": "INBOX"
+                                                                },
+                                                                {
+                                                                    "label": "Spam",
+                                                                    "value": "SPAM"
+                                                                },
+                                                                {
+                                                                    "label": "Starred",
+                                                                    "value": "STARRED"
+                                                                },
+                                                                {
+                                                                    "label": "Trash",
+                                                                    "value": "TRASH"
+                                                                },
+                                                                {
+                                                                    "label": "Unread",
+                                                                    "value": "UNREAD"
+                                                                },
+                                                                {
+                                                                    "label": "Yellow star",
+                                                                    "value": "YELLOW_STAR"
+                                                                }
+                                                            ]
+                                                        },
+                                                        {
+                                                            "type": "category",
+                                                            "label": "Categories",
+                                                            "options": [
+                                                                {
+                                                                    "label": "Forums",
+                                                                    "value": "CATEGORY_FORUMS"
+                                                                },
+                                                                {
+                                                                    "label": "Personal",
+                                                                    "value": "CATEGORY_PERSONAL"
+                                                                },
+                                                                {
+                                                                    "label": "Promotions",
+                                                                    "value": "CATEGORY_PROMOTIONS"
+                                                                },
+                                                                {
+                                                                    "label": "Social",
+                                                                    "value": "CATEGORY_SOCIAL"
+                                                                },
+                                                                {
+                                                                    "label": "Updates",
+                                                                    "value": "CATEGORY_UPDATES"
+                                                                }
+                                                            ]
+                                                        },
+                                                        {
+                                                            "type": "user",
+                                                            "label": "User labels",
+                                                            "options": [
+                                                                {
+                                                                    "label": "Nota de control",
+                                                                    "value": "Label_6269678699644561253"
+                                                                },
+                                                                {
+                                                                    "label": "prevalores",
+                                                                    "value": "Label_5640535065916496965"
+                                                                }
+                                                            ]
+                                                        }
+                                                    ],
+                                                    "mappable": {
+                                                        "help": "Enter a folder/label ID."
+                                                    },
+                                                    "required": true
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "parameters": {
+                                        "__IMTCONN__": {
+                                            "data": {
+                                                "scoped": "true",
+                                                "connection": "google-email"
+                                            },
+                                            "label": "My Gmail connection (bisont55@gmail.com)"
+                                        }
+                                    }
+                                },
+                                "parameters": [
+                                    {
+                                        "name": "__IMTCONN__",
+                                        "type": "account:google-email",
+                                        "label": "Connection",
+                                        "required": true
+                                    }
+                                ],
+                                "expect": [
+                                    {
+                                        "name": "messageId",
+                                        "type": "text",
+                                        "label": "Message ID",
+                                        "required": true
+                                    },
+                                    {
+                                        "name": "from",
+                                        "type": "select",
+                                        "label": "Source folder",
+                                        "required": true
+                                    },
+                                    {
+                                        "name": "to",
+                                        "type": "select",
+                                        "label": "Destination folder",
+                                        "required": true
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "id": 18,
+                            "module": "google-email:listEmailAttachments",
+                            "version": 4,
+                            "parameters": {
+                                "__IMTCONN__": 3702043
+                            },
+                            "mapper": {
+                                "include": [
+                                    "attachment"
+                                ],
+                                "messageId": "{{24.id}}",
+                                "returnAttachmentData": true
+                            },
+                            "metadata": {
+                                "designer": {
+                                    "x": 900,
+                                    "y": 300,
+                                    "name": "Descarga adjuntos"
+                                },
+                                "restore": {
+                                    "expect": {
+                                        "include": {
+                                            "mode": "chose"
+                                        }
+                                    },
+                                    "parameters": {
+                                        "__IMTCONN__": {
+                                            "data": {
+                                                "scoped": "true",
+                                                "connection": "google-email"
+                                            },
+                                            "label": "My Gmail connection (bisont55@gmail.com)"
+                                        }
+                                    }
+                                },
+                                "parameters": [
+                                    {
+                                        "name": "__IMTCONN__",
+                                        "type": "account:google-email",
+                                        "label": "Connection",
+                                        "required": true
+                                    }
+                                ],
+                                "expect": [
+                                    {
+                                        "name": "messageId",
+                                        "type": "text",
+                                        "label": "Message ID",
+                                        "required": true
+                                    },
+                                    {
+                                        "name": "include",
+                                        "type": "select",
+                                        "label": "Include",
+                                        "multiple": true,
+                                        "required": true,
+                                        "validate": {
+                                            "enum": [
+                                                "attachment",
+                                                "media"
+                                            ]
+                                        }
+                                    },
+                                    {
+                                        "name": "returnAttachmentData",
+                                        "type": "boolean",
+                                        "label": "Return media or attachment file data",
+                                        "required": true
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "id": 19,
+                            "module": "google-drive:uploadAFile",
+                            "version": 4,
+                            "parameters": {
+                                "__IMTCONN__": 4604668
+                            },
+                            "mapper": {
+                                "data": "{{18.data}}",
+                                "select": "map",
+                                "convert": false,
+                                "filename": "{{18.filename}}",
+                                "folderId": "17TKQFLE4R84e3qMUUHimTw1jZMoC4jJY"
+                            },
+                            "metadata": {
+                                "designer": {
+                                    "x": 1249,
+                                    "y": 293,
+                                    "name": "Subir adjuntos a drive"
+                                },
+                                "restore": {
+                                    "expect": {
+                                        "select": {
+                                            "label": "Enter manually"
+                                        }
+                                    },
+                                    "parameters": {
+                                        "__IMTCONN__": {
+                                            "data": {
+                                                "scoped": "true",
+                                                "connection": "google-restricted"
+                                            },
+                                            "label": "Master IA - Drive (bisont55@gmail.com)"
+                                        }
+                                    }
+                                },
+                                "parameters": [
+                                    {
+                                        "name": "__IMTCONN__",
+                                        "type": "account:google-restricted",
+                                        "label": "Connection",
+                                        "required": true
+                                    }
+                                ],
+                                "expect": [
+                                    {
+                                        "name": "select",
+                                        "type": "select",
+                                        "label": "Enter a Folder ID",
+                                        "required": true,
+                                        "validate": {
+                                            "enum": [
+                                                "map",
+                                                "value"
+                                            ]
+                                        }
+                                    },
+                                    {
+                                        "name": "title",
+                                        "type": "text",
+                                        "label": "New File Name"
+                                    },
+                                    {
+                                        "name": "filename",
+                                        "type": "text",
+                                        "label": "File Name",
+                                        "required": true
+                                    },
+                                    {
+                                        "name": "data",
+                                        "type": "buffer",
+                                        "label": "Data",
+                                        "required": true
+                                    },
+                                    {
+                                        "name": "convert",
+                                        "type": "boolean",
+                                        "label": "Convert a File",
+                                        "required": true
+                                    },
+                                    {
+                                        "name": "folderId",
+                                        "type": "text",
+                                        "label": "Folder ID",
+                                        "required": true
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "id": 40,
+                            "module": "builtin:BasicAggregator",
+                            "version": 1,
+                            "parameters": {
+                                "feeder": 19
+                            },
+                            "mapper": {
+                                "name": "{{19.name}}",
+                                "webViewLink": "{{19.webViewLink}}",
+                                "userLabelFolders": "{{24.userLabelFolders}}"
+                            },
+                            "metadata": {
+                                "designer": {
+                                    "x": 1549,
+                                    "y": 293,
+                                    "name": "Información adjuntos"
+                                },
+                                "restore": {
+                                    "extra": {
+                                        "feeder": {
+                                            "label": "Subir adjuntos a drive - Upload a File [19]"
+                                        },
+                                        "target": {
+                                            "label": "Custom"
+                                        }
+                                    }
+                                },
+                                "advanced": true
+                            },
+                            "flags": {
+                                "groupBy": "{{11.id}}"
+                            }
+                        },
+                        {
+                            "id": 38,
+                            "module": "builtin:BasicFeeder",
+                            "version": 1,
+                            "parameters": {},
+                            "mapper": {
+                                "array": "{{40.array[].userLabelFolders}}"
+                            },
+                            "metadata": {
+                                "designer": {
+                                    "x": 1886,
+                                    "y": 302,
+                                    "name": "Nombre carpeta  para Airtable"
+                                },
+                                "restore": {
+                                    "expect": {
+                                        "array": {
+                                            "mode": "edit"
+                                        }
+                                    }
+                                },
+                                "expect": [
+                                    {
+                                        "mode": "edit",
+                                        "name": "array",
+                                        "spec": [],
+                                        "type": "array",
+                                        "label": "Array"
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "id": 39,
+                            "module": "airtable:ActionCreateRecord",
+                            "version": 3,
+                            "parameters": {
+                                "__IMTCONN__": 4653225
+                            },
+                            "mapper": {
+                                "base": "appYAhjjPyLSFydC3",
+                                "table": "tbl7Vcz4Z3n4F3lRy",
+                                "record": {
+                                    "fldJP5easvle0SjYC": "{{40.array[].name}}",
+                                    "fldhsGftrvuQHkT48": "{{40.array[].webViewLink}}",
+                                    "fldzaoBtJvTDY6hQN": "{{38.name}}"
+                                },
+                                "typecast": false,
+                                "useColumnId": false
+                            },
+                            "metadata": {
+                                "designer": {
+                                    "x": 2203,
+                                    "y": 299,
+                                    "name": "Agregar información a tabla"
+                                },
+                                "restore": {
+                                    "expect": {
+                                        "base": {
+                                            "label": "Clasificación adjuntos"
+                                        },
+                                        "table": {
+                                            "label": "Tabla adjuntos",
+                                            "nested": [
+                                                {
+                                                    "name": "record",
+                                                    "spec": [
+                                                        {
+                                                            "name": "fldJP5easvle0SjYC",
+                                                            "type": "text",
+                                                            "label": "Archivo"
+                                                        },
+                                                        {
+                                                            "name": "fldzaoBtJvTDY6hQN",
+                                                            "type": "text",
+                                                            "label": "Carpeta",
+                                                            "multiline": true
+                                                        },
+                                                        {
+                                                            "name": "fldhsGftrvuQHkT48",
+                                                            "type": "text",
+                                                            "label": "Enlace"
+                                                        },
+                                                        {
+                                                            "name": "fldAiZis25E7FBNki",
+                                                            "time": true,
+                                                            "type": "date",
+                                                            "label": "Date"
+                                                        },
+                                                        {
+                                                            "name": "fldi0kVzwEI5d9MJR",
+                                                            "spec": [
+                                                                {
+                                                                    "help": "Airtable will download the file at the given url and keep its own copy of it.",
+                                                                    "name": "url",
+                                                                    "type": "text",
+                                                                    "label": "File URL"
+                                                                },
+                                                                {
+                                                                    "help": "If empty, Airtable will generate the name automatically.",
+                                                                    "name": "filename",
+                                                                    "type": "filename",
+                                                                    "label": "File name"
+                                                                }
+                                                            ],
+                                                            "type": "array",
+                                                            "label": "Attachments",
+                                                            "editable": true
+                                                        }
+                                                    ],
+                                                    "type": "collection",
+                                                    "label": "Record"
+                                                }
+                                            ]
+                                        },
+                                        "record": {
+                                            "nested": {
+                                                "fldi0kVzwEI5d9MJR": {
+                                                    "mode": "chose"
+                                                }
+                                            }
+                                        },
+                                        "typecast": {
+                                            "mode": "chose"
+                                        },
+                                        "useColumnId": {
+                                            "mode": "chose"
+                                        }
+                                    },
+                                    "parameters": {
+                                        "__IMTCONN__": {
+                                            "data": {
+                                                "scoped": "true",
+                                                "connection": "airtable2"
+                                            },
+                                            "label": "Master IA - Airtable"
+                                        }
+                                    }
+                                },
+                                "parameters": [
+                                    {
+                                        "name": "__IMTCONN__",
+                                        "type": "account:airtable3,airtable2",
+                                        "label": "Connection",
+                                        "required": true
+                                    }
+                                ],
+                                "expect": [
+                                    {
+                                        "name": "base",
+                                        "type": "select",
+                                        "label": "Base",
+                                        "required": true
+                                    },
+                                    {
+                                        "name": "typecast",
+                                        "type": "boolean",
+                                        "label": "Smart links",
+                                        "required": true
+                                    },
+                                    {
+                                        "name": "useColumnId",
+                                        "type": "boolean",
+                                        "label": "Use Column ID",
+                                        "required": true
+                                    },
+                                    {
+                                        "name": "table",
+                                        "type": "select",
+                                        "label": "Table",
+                                        "required": true
+                                    },
+                                    {
+                                        "name": "record",
+                                        "spec": [
+                                            {
+                                                "name": "fldJP5easvle0SjYC",
+                                                "type": "text",
+                                                "label": "Archivo"
+                                            },
+                                            {
+                                                "name": "fldzaoBtJvTDY6hQN",
+                                                "type": "text",
+                                                "label": "Carpeta"
+                                            },
+                                            {
+                                                "name": "fldhsGftrvuQHkT48",
+                                                "type": "text",
+                                                "label": "Enlace"
+                                            },
+                                            {
+                                                "name": "fldAiZis25E7FBNki",
+                                                "time": true,
+                                                "type": "date",
+                                                "label": "Date"
+                                            },
+                                            {
+                                                "name": "fldi0kVzwEI5d9MJR",
+                                                "spec": [
+                                                    {
+                                                        "name": "url",
+                                                        "type": "text",
+                                                        "label": "File URL"
+                                                    },
+                                                    {
+                                                        "name": "filename",
+                                                        "type": "filename",
+                                                        "label": "File name"
+                                                    }
+                                                ],
+                                                "type": "array",
+                                                "label": "Attachments"
+                                            }
+                                        ],
+                                        "type": "collection",
+                                        "label": "Record"
+                                    }
+                                ],
+                                "interface": [
+                                    {
+                                        "name": "id",
+                                        "type": "text",
+                                        "label": "ID"
+                                    },
+                                    {
+                                        "name": "createdTime",
+                                        "type": "date",
+                                        "label": "Created Time"
+                                    },
+                                    {
+                                        "name": "Archivo",
+                                        "type": "text",
+                                        "label": "Archivo"
+                                    },
+                                    {
+                                        "name": "Carpeta",
+                                        "type": "text",
+                                        "label": "Carpeta",
+                                        "multiline": true
+                                    },
+                                    {
+                                        "name": "Enlace",
+                                        "type": "text",
+                                        "label": "Enlace"
+                                    },
+                                    {
+                                        "name": "Date",
+                                        "type": "date",
+                                        "label": "Date"
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "flow": [
+                        {
+                            "id": 28,
+                            "module": "google-email:moveAnEmail",
+                            "version": 4,
+                            "parameters": {
+                                "__IMTCONN__": 3702043
+                            },
+                            "filter": {
+                                "name": "asignada no bancaria",
+                                "conditions": [
+                                    [
+                                        {
+                                            "a": "{{11.subject}}",
+                                            "b": "asignada",
+                                            "o": "text:contain:ci"
+                                        },
+                                        {
+                                            "a": "{{11.fullTextBody}}",
+                                            "b": "no bancario",
+                                            "o": "text:contain:ci"
+                                        }
+                                    ]
+                                ]
+                            },
+                            "mapper": {
+                                "to": "Label_2866347493968749926",
+                                "from": "INBOX",
+                                "messageId": "{{11.id}}"
+                            },
+                            "metadata": {
+                                "designer": {
+                                    "x": 600,
+                                    "y": 600,
+                                    "name": "Mueve a asignada no bancaria"
+                                },
+                                "restore": {
+                                    "expect": {
+                                        "to": {
+                                            "mode": "chose",
+                                            "label": "Asignada no bancaria"
+                                        },
+                                        "from": {
+                                            "mode": "chose",
+                                            "label": "Inbox"
+                                        },
+                                        "messageId": {
+                                            "nested": [
+                                                {
+                                                    "help": "To ensure you see the most up-to-date labels, refresh **↻** the Message ID above.",
+                                                    "name": "from",
+                                                    "type": "select",
+                                                    "label": "Source folder",
+                                                    "default": "INBOX",
+                                                    "dynamic": true,
+                                                    "grouped": true,
+                                                    "options": [
+                                                        {
+                                                            "type": "system",
+                                                            "label": "System folders",
+                                                            "options": [
+                                                                {
+                                                                    "label": "Important",
+                                                                    "value": "IMPORTANT"
+                                                                },
+                                                                {
+                                                                    "label": "Inbox",
+                                                                    "value": "INBOX"
+                                                                },
+                                                                {
+                                                                    "label": "Spam",
+                                                                    "value": "SPAM"
+                                                                },
+                                                                {
+                                                                    "label": "Starred",
+                                                                    "value": "STARRED"
+                                                                },
+                                                                {
+                                                                    "label": "Trash",
+                                                                    "value": "TRASH"
+                                                                },
+                                                                {
+                                                                    "label": "Unread",
+                                                                    "value": "UNREAD"
+                                                                },
+                                                                {
+                                                                    "label": "Yellow star",
+                                                                    "value": "YELLOW_STAR"
+                                                                }
+                                                            ]
+                                                        },
+                                                        {
+                                                            "type": "category",
+                                                            "label": "Categories",
+                                                            "options": [
+                                                                {
+                                                                    "label": "Forums",
+                                                                    "value": "CATEGORY_FORUMS"
+                                                                },
+                                                                {
+                                                                    "label": "Personal",
+                                                                    "value": "CATEGORY_PERSONAL"
+                                                                },
+                                                                {
+                                                                    "label": "Promotions",
+                                                                    "value": "CATEGORY_PROMOTIONS"
+                                                                },
+                                                                {
+                                                                    "label": "Social",
+                                                                    "value": "CATEGORY_SOCIAL"
+                                                                },
+                                                                {
+                                                                    "label": "Updates",
+                                                                    "value": "CATEGORY_UPDATES"
+                                                                }
+                                                            ]
+                                                        },
+                                                        {
+                                                            "type": "user",
+                                                            "label": "User labels",
+                                                            "options": [
+                                                                {
+                                                                    "label": "Asignada no bancaria",
+                                                                    "value": "Label_2866347493968749926"
+                                                                },
+                                                                {
+                                                                    "label": "Nota de control",
+                                                                    "value": "Label_6269678699644561253"
+                                                                },
+                                                                {
+                                                                    "label": "prevalores",
+                                                                    "value": "Label_5640535065916496965"
+                                                                }
+                                                            ]
+                                                        }
+                                                    ],
+                                                    "mappable": {
+                                                        "help": "Enter a folder/label ID."
+                                                    },
+                                                    "required": true
+                                                },
+                                                {
+                                                    "help": "To ensure you see the most up-to-date labels, refresh **↻** the Message ID above.",
+                                                    "name": "to",
+                                                    "type": "select",
+                                                    "label": "Destination folder",
+                                                    "dynamic": true,
+                                                    "grouped": true,
+                                                    "options": [
+                                                        {
+                                                            "type": "system",
+                                                            "label": "System folders",
+                                                            "options": [
+                                                                {
+                                                                    "label": "Important",
+                                                                    "value": "IMPORTANT"
+                                                                },
+                                                                {
+                                                                    "label": "Inbox",
+                                                                    "value": "INBOX"
+                                                                },
+                                                                {
+                                                                    "label": "Spam",
+                                                                    "value": "SPAM"
+                                                                },
+                                                                {
+                                                                    "label": "Starred",
+                                                                    "value": "STARRED"
+                                                                },
+                                                                {
+                                                                    "label": "Trash",
+                                                                    "value": "TRASH"
+                                                                },
+                                                                {
+                                                                    "label": "Unread",
+                                                                    "value": "UNREAD"
+                                                                },
+                                                                {
+                                                                    "label": "Yellow star",
+                                                                    "value": "YELLOW_STAR"
+                                                                }
+                                                            ]
+                                                        },
+                                                        {
+                                                            "type": "category",
+                                                            "label": "Categories",
+                                                            "options": [
+                                                                {
+                                                                    "label": "Forums",
+                                                                    "value": "CATEGORY_FORUMS"
+                                                                },
+                                                                {
+                                                                    "label": "Personal",
+                                                                    "value": "CATEGORY_PERSONAL"
+                                                                },
+                                                                {
+                                                                    "label": "Promotions",
+                                                                    "value": "CATEGORY_PROMOTIONS"
+                                                                },
+                                                                {
+                                                                    "label": "Social",
+                                                                    "value": "CATEGORY_SOCIAL"
+                                                                },
+                                                                {
+                                                                    "label": "Updates",
+                                                                    "value": "CATEGORY_UPDATES"
+                                                                }
+                                                            ]
+                                                        },
+                                                        {
+                                                            "type": "user",
+                                                            "label": "User labels",
+                                                            "options": [
+                                                                {
+                                                                    "label": "Asignada no bancaria",
+                                                                    "value": "Label_2866347493968749926"
+                                                                },
+                                                                {
+                                                                    "label": "Nota de control",
+                                                                    "value": "Label_6269678699644561253"
+                                                                },
+                                                                {
+                                                                    "label": "prevalores",
+                                                                    "value": "Label_5640535065916496965"
+                                                                }
+                                                            ]
+                                                        }
+                                                    ],
+                                                    "mappable": {
+                                                        "help": "Enter a folder/label ID."
+                                                    },
+                                                    "required": true
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "parameters": {
+                                        "__IMTCONN__": {
+                                            "data": {
+                                                "scoped": "true",
+                                                "connection": "google-email"
+                                            },
+                                            "label": "My Gmail connection (bisont55@gmail.com)"
+                                        }
+                                    }
+                                },
+                                "parameters": [
+                                    {
+                                        "name": "__IMTCONN__",
+                                        "type": "account:google-email",
+                                        "label": "Connection",
+                                        "required": true
+                                    }
+                                ],
+                                "expect": [
+                                    {
+                                        "name": "messageId",
+                                        "type": "text",
+                                        "label": "Message ID",
+                                        "required": true
+                                    },
+                                    {
+                                        "name": "from",
+                                        "type": "select",
+                                        "label": "Source folder",
+                                        "required": true
+                                    },
+                                    {
+                                        "name": "to",
+                                        "type": "select",
+                                        "label": "Destination folder",
+                                        "required": true
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "id": 29,
+                            "module": "google-email:listEmailAttachments",
+                            "version": 4,
+                            "parameters": {
+                                "__IMTCONN__": 3702043
+                            },
+                            "mapper": {
+                                "include": [
+                                    "attachment"
+                                ],
+                                "messageId": "{{28.id}}",
+                                "returnAttachmentData": true
+                            },
+                            "metadata": {
+                                "designer": {
+                                    "x": 900,
+                                    "y": 600,
+                                    "name": "Descarga adjuntos"
+                                },
+                                "restore": {
+                                    "expect": {
+                                        "include": {
+                                            "mode": "chose"
+                                        }
+                                    },
+                                    "parameters": {
+                                        "__IMTCONN__": {
+                                            "data": {
+                                                "scoped": "true",
+                                                "connection": "google-email"
+                                            },
+                                            "label": "My Gmail connection (bisont55@gmail.com)"
+                                        }
+                                    }
+                                },
+                                "parameters": [
+                                    {
+                                        "name": "__IMTCONN__",
+                                        "type": "account:google-email",
+                                        "label": "Connection",
+                                        "required": true
+                                    }
+                                ],
+                                "expect": [
+                                    {
+                                        "name": "messageId",
+                                        "type": "text",
+                                        "label": "Message ID",
+                                        "required": true
+                                    },
+                                    {
+                                        "name": "include",
+                                        "type": "select",
+                                        "label": "Include",
+                                        "multiple": true,
+                                        "required": true,
+                                        "validate": {
+                                            "enum": [
+                                                "attachment",
+                                                "media"
+                                            ]
+                                        }
+                                    },
+                                    {
+                                        "name": "returnAttachmentData",
+                                        "type": "boolean",
+                                        "label": "Return media or attachment file data",
+                                        "required": true
+                                    }
+                                ],
+                                "advanced": true
+                            }
+                        },
+                        {
+                            "id": 31,
+                            "module": "google-drive:uploadAFile",
+                            "version": 4,
+                            "filter": {
+                                "name": "adjuntos",
+                                "conditions": [
+                                    [
+                                        {
+                                            "a": "{{11.hasAttachment}}",
+                                            "b": "true",
+                                            "o": "text:equal"
+                                        }
+                                    ]
+                                ]
+                            },
+                            "metadata": {
+                                "designer": {
+                                    "x": 1290,
+                                    "y": 598,
+                                    "name": "Subir adjuntos a Drive"
+                                }
+                            }
+                        },
+                        {
+                            "id": 44,
+                            "module": "builtin:BasicAggregator",
+                            "version": 1,
+                            "parameters": {
+                                "feeder": 31
+                            },
+                            "mapper": {
+                                "name": "{{31.name}}",
+                                "webViewLink": "{{31.webViewLink}}",
+                                "userLabelFolders": "{{28.userLabelFolders}}"
+                            },
+                            "metadata": {
+                                "designer": {
+                                    "x": 1588,
+                                    "y": 591,
+                                    "name": "Información adjuntos"
+                                },
+                                "restore": {
+                                    "extra": {
+                                        "feeder": {
+                                            "label": "Subir adjuntos a Drive - Upload a File [31]"
+                                        },
+                                        "target": {
+                                            "label": "Custom"
+                                        }
+                                    }
+                                },
+                                "advanced": true
+                            },
+                            "flags": {
+                                "groupBy": "{{11.id}}"
+                            }
+                        },
+                        {
+                            "id": 42,
+                            "module": "builtin:BasicFeeder",
+                            "version": 1,
+                            "parameters": {},
+                            "mapper": {
+                                "array": "{{44.array[].userLabelFolders}}"
+                            },
+                            "metadata": {
+                                "designer": {
+                                    "x": 1916,
+                                    "y": 596,
+                                    "name": "Nombre carpeta para Airtable"
+                                },
+                                "restore": {
+                                    "expect": {
+                                        "array": {
+                                            "mode": "edit"
+                                        }
+                                    }
+                                },
+                                "expect": [
+                                    {
+                                        "mode": "edit",
+                                        "name": "array",
+                                        "spec": [],
+                                        "type": "array",
+                                        "label": "Array"
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "id": 43,
+                            "module": "airtable:ActionCreateRecord",
+                            "version": 3,
+                            "parameters": {
+                                "__IMTCONN__": 4653225
+                            },
+                            "mapper": {
+                                "base": "appYAhjjPyLSFydC3",
+                                "table": "tbl7Vcz4Z3n4F3lRy",
+                                "record": {
+                                    "fldJP5easvle0SjYC": "{{44.array[].name}}",
+                                    "fldhsGftrvuQHkT48": "{{44.array[].webViewLink}}",
+                                    "fldzaoBtJvTDY6hQN": "{{42.name}}"
+                                },
+                                "typecast": false,
+                                "useColumnId": false
+                            },
+                            "metadata": {
+                                "designer": {
+                                    "x": 2233,
+                                    "y": 593,
+                                    "name": "Agregar información a tabla"
+                                },
+                                "restore": {
+                                    "expect": {
+                                        "base": {
+                                            "label": "Clasificación adjuntos"
+                                        },
+                                        "table": {
+                                            "label": "Tabla adjuntos",
+                                            "nested": [
+                                                {
+                                                    "name": "record",
+                                                    "spec": [
+                                                        {
+                                                            "name": "fldJP5easvle0SjYC",
+                                                            "type": "text",
+                                                            "label": "Archivo"
+                                                        },
+                                                        {
+                                                            "name": "fldzaoBtJvTDY6hQN",
+                                                            "type": "text",
+                                                            "label": "Carpeta",
+                                                            "multiline": true
+                                                        },
+                                                        {
+                                                            "name": "fldhsGftrvuQHkT48",
+                                                            "type": "text",
+                                                            "label": "Enlace"
+                                                        },
+                                                        {
+                                                            "name": "fldAiZis25E7FBNki",
+                                                            "time": true,
+                                                            "type": "date",
+                                                            "label": "Date"
+                                                        },
+                                                        {
+                                                            "name": "fldi0kVzwEI5d9MJR",
+                                                            "spec": [
+                                                                {
+                                                                    "help": "Airtable will download the file at the given url and keep its own copy of it.",
+                                                                    "name": "url",
+                                                                    "type": "text",
+                                                                    "label": "File URL"
+                                                                },
+                                                                {
+                                                                    "help": "If empty, Airtable will generate the name automatically.",
+                                                                    "name": "filename",
+                                                                    "type": "filename",
+                                                                    "label": "File name"
+                                                                }
+                                                            ],
+                                                            "type": "array",
+                                                            "label": "Attachments",
+                                                            "editable": true
+                                                        }
+                                                    ],
+                                                    "type": "collection",
+                                                    "label": "Record"
+                                                }
+                                            ]
+                                        },
+                                        "record": {
+                                            "nested": {
+                                                "fldi0kVzwEI5d9MJR": {
+                                                    "mode": "chose"
+                                                }
+                                            }
+                                        },
+                                        "typecast": {
+                                            "mode": "chose"
+                                        },
+                                        "useColumnId": {
+                                            "mode": "chose"
+                                        }
+                                    },
+                                    "parameters": {
+                                        "__IMTCONN__": {
+                                            "data": {
+                                                "scoped": "true",
+                                                "connection": "airtable2"
+                                            },
+                                            "label": "Master IA - Airtable"
+                                        }
+                                    }
+                                },
+                                "parameters": [
+                                    {
+                                        "name": "__IMTCONN__",
+                                        "type": "account:airtable3,airtable2",
+                                        "label": "Connection",
+                                        "required": true
+                                    }
+                                ],
+                                "expect": [
+                                    {
+                                        "name": "base",
+                                        "type": "select",
+                                        "label": "Base",
+                                        "required": true
+                                    },
+                                    {
+                                        "name": "typecast",
+                                        "type": "boolean",
+                                        "label": "Smart links",
+                                        "required": true
+                                    },
+                                    {
+                                        "name": "useColumnId",
+                                        "type": "boolean",
+                                        "label": "Use Column ID",
+                                        "required": true
+                                    },
+                                    {
+                                        "name": "table",
+                                        "type": "select",
+                                        "label": "Table",
+                                        "required": true
+                                    },
+                                    {
+                                        "name": "record",
+                                        "spec": [
+                                            {
+                                                "name": "fldJP5easvle0SjYC",
+                                                "type": "text",
+                                                "label": "Archivo"
+                                            },
+                                            {
+                                                "name": "fldzaoBtJvTDY6hQN",
+                                                "type": "text",
+                                                "label": "Carpeta"
+                                            },
+                                            {
+                                                "name": "fldhsGftrvuQHkT48",
+                                                "type": "text",
+                                                "label": "Enlace"
+                                            },
+                                            {
+                                                "name": "fldAiZis25E7FBNki",
+                                                "time": true,
+                                                "type": "date",
+                                                "label": "Date"
+                                            },
+                                            {
+                                                "name": "fldi0kVzwEI5d9MJR",
+                                                "spec": [
+                                                    {
+                                                        "name": "url",
+                                                        "type": "text",
+                                                        "label": "File URL"
+                                                    },
+                                                    {
+                                                        "name": "filename",
+                                                        "type": "filename",
+                                                        "label": "File name"
+                                                    }
+                                                ],
+                                                "type": "array",
+                                                "label": "Attachments"
+                                            }
+                                        ],
+                                        "type": "collection",
+                                        "label": "Record"
+                                    }
+                                ],
+                                "interface": [
+                                    {
+                                        "name": "id",
+                                        "type": "text",
+                                        "label": "ID"
+                                    },
+                                    {
+                                        "name": "createdTime",
+                                        "type": "date",
+                                        "label": "Created Time"
+                                    },
+                                    {
+                                        "name": "Archivo",
+                                        "type": "text",
+                                        "label": "Archivo"
+                                    },
+                                    {
+                                        "name": "Carpeta",
+                                        "type": "text",
+                                        "label": "Carpeta",
+                                        "multiline": true
+                                    },
+                                    {
+                                        "name": "Enlace",
+                                        "type": "text",
+                                        "label": "Enlace"
+                                    },
+                                    {
+                                        "name": "Date",
+                                        "type": "date",
+                                        "label": "Date"
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "metadata": {
+        "instant": false,
+        "version": 1,
+        "scenario": {
+            "roundtrips": 1,
+            "maxErrors": 3,
+            "autoCommit": true,
+            "autoCommitTriggerLast": true,
+            "sequential": false,
+            "slots": null,
+            "confidential": false,
+            "dataloss": false,
+            "dlq": false,
+            "freshVariables": false
+        },
+        "designer": {
+            "orphans": []
+        },
+        "zone": "eu1.make.com",
+        "notes": []
+    }
+}
